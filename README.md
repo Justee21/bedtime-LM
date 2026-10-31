@@ -39,7 +39,7 @@ We created a custom dataset so each user can determine the context size that the
 
 Inputting the embedding table $X$ with dimensions $(B, T, d_{model})$, we also want an output of the same size. We have learned weight matrices $W_Q, W_K, W_V$ and multiply $X$ by each to get $Q, K, V$.
 
-The idea of the shaping: $X$ is of shape $(B, T, D)$ after the embeddings, and in each head the learned matrices $W_K, W_Q, W_V$ are of size $D \times d_k$, where $d_k = D / \text{num\_heads}$ (the head dim). So $XW_K$ is of size $(B, T, d_k)$, and then we concatenate all the heads and multiply by a $W_O$ matrix to get back to $(B, T, D)$.
+The idea of the shaping: $X$ is of shape $(B, T, D)$ after the embeddings, and in each head the learned matrices $W_K, W_Q, W_V$ are of size $D \times d_k$, where $`d_k = D / \text{num\_heads}`$ (the head dim). So $XW_K$ is of size $(B, T, d_k)$, and then we concatenate all the heads and multiply by a $W_O$ matrix to get back to $(B, T, D)$.
 
 The number of heads is usually 8 or 16 for smaller models; more modern GPTs are more in the 32–96 range.
 
@@ -49,12 +49,12 @@ Since RoPE requires us to compute the angles $\theta_k = 10000^{-2k/d}$, where $
 
 In the forward pass we splice $Q$ and $K$ into even and odd dimensions and simplify the rotation matrix to an elementwise multiply:
 
-$$
+```math
 \begin{aligned}
 q_{\text{even}}' &= q_{\text{even}} \cos\theta - q_{\text{odd}} \sin\theta \\
 q_{\text{odd}}' &= q_{\text{even}} \sin\theta + q_{\text{odd}} \cos\theta
 \end{aligned}
-$$
+```
 
 We sum over the hidden dim in $QK^\top$, so the order in which we keep the hidden dims doesn't matter.
 
